@@ -7,12 +7,14 @@ export const AppDataSource = new DataSource({
     port: 5432,
     username: "postgres",
     password: "empiresamri11",
-    database: "threads-apps",
+    database: "new-threads-web",
     synchronize: true,
     logging: false,
     entities: [
-        "src/entities/*.ts"
+        "src/entities/*ts"
     ],
-    migrations: ["src/migration/*.ts"],
+    migrations: [
+        "src/migrations/*ts"
+    ],
     subscribers: [],
 })

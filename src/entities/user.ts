@@ -1,60 +1,42 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
-import { Thread } from "./thread"
-import { Like } from "./like"
-import { Following } from "./following"
-import { Reply } from "./reply"
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn } from "typeorm";
+import { Threads } from "./Thread";
 
-@Entity({name: "users"})
+
+
+@Entity()
 export class User {
-
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
+
+    @Column({nullable: false})
+    username: string;
+
+    @Column({nullable: false})
+    full_name: string;
 
     @Column()
-    username: string
+    email: string;
 
     @Column()
-    full_name: string
-    
-    @Column()
-    email: string
-    
-    @Column()
-    password: string
-    
-    @Column()
-    profile_picture: string
-    
-    @Column()
-    profile_description: string
+    password: string;
 
-    @OneToMany(() => Thread, (thread) => thread.users, {
+    @Column({nullable: true})
+    photo_profile: string;
+
+    @Column({nullable: true})
+    bio: string;
+
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    created_at: Date;
+
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    updated_at: Date;
+
+    @OneToMany(() => Threads, (thread) => thread.created_by,{
+        onDelete: "CASCADE",
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
     })
-    threads: Thread[]
+    @JoinColumn()
+    threads: Threads[]
 
-    @OneToMany(() => Like, (like) => like.user, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    })
-    likes:Like[]
-
-    @OneToMany(() => Reply, (reply) => reply.user, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    })
-    replies:Reply[]
-
-    @OneToMany(() => Following, (following) => following.followed, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    })
-    followings:Following[]
-
-    @OneToMany(() => Following, (follower) => follower.follower, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    })
-    followers:Following[]
 }

@@ -1,42 +1,53 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Timestamp, CreateDateColumn, OneToMany } from "typeorm"
-import { User } from "./user"
-import{ Like } from "./like"
-import { Reply } from "./reply"
+import { 
+    Entity, 
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    OneToMany
+
+} from "typeorm";
+import { User } from "./User";
+import { Replies } from "./Replies";
+import { Likes } from "./Likes";
+
 
 @Entity({name: "threads"})
-export class Thread {
-
+export class Threads{
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
-    @Column({nullable: true})
-    content: string
+    @Column()
+    content: string;
 
-    @Column({nullable:true})
-    image: string
+    @Column()
+    image: string;
 
-    @CreateDateColumn({type: "timestamp with time zone"})
-    posted_at: Date;
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    created_at: Date;
+
+    @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
+    updated_at: Date;
 
     @ManyToOne(() => User, (user) => user.threads, {
+        onDelete: "CASCADE",
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    }
-    )
-    users:User
+      })
+    @JoinColumn()
+    created_by: User;
 
-    @OneToMany(() => Like, (like) => like.thread, {
+    @OneToMany(() => Replies, (replie) => replie.thread_id, {
+        onDelete: "CASCADE",
         onUpdate: "CASCADE",
-        onDelete: "CASCADE"
+      })
+    @JoinColumn()
+    number_of_replies: Replies[];
+
+    @OneToMany(() => Likes, (like) => like.thread_id, {
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     })
-
-    likes:Like[]
-
-    @OneToMany(() => Reply, (reply) => reply.thread, {
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE"
-    })
-
-    replies:Reply[]
+    @JoinColumn()
+    like: Likes[];
 
 }

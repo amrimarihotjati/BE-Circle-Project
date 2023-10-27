@@ -1,28 +1,37 @@
-import { AppDataSource } from "./data-source"
-import * as express from "express"
-import routerThread from "./route/ThreadRoutes"
-import routerUser from "./route/UserRoutes"
-import routerReply from "./route/ReplyRoutes"
+import { AppDataSource } from "./data-source";
+import * as express from "express";
+import * as cors from "cors";
+import { ThreadRoute, UserRoute, ReplyRoute } from "./routes";
+
 
 
 
 AppDataSource.initialize()
+    .then(async () => {
+        const app = express();
+        
+        //Port
+        const PORT = 5000;
+        //Cors Option
+        const API_URL = "http://localhost:5173/";
+        const option: cors.CorsOptions = {
+            allowedHeaders: ["X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
 
-.then(async () => {
-    const app = express()
-    const port = 5000
+            credentials: true,
+            methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+            preflightContinue: false,
+        }
 
-    app.use(express.json())
-    app.use("/api/v1", routerThread ) //akan menjadi http://localhost:5000/api/v1/hello
-    app.use("/api/v1", routerUser )
-    app.use("/api/v1", routerReply )
+        app.use(cors(option));
+        app.use(express.json());
+        app.use("/api/v1", ThreadRoute);
+        app.use("/api/v1", UserRoute);
+        app.use("/api/v1", ReplyRoute);
 
-    app.listen(port, () => {
-        console.log("Server Running on port :" + port)
+
+        app.listen(PORT, () => {
+            console.log(`Server is running on http://localhost:${PORT}`);
+        })
+
     })
-
-})
-.catch
-(error => console.log
-    (error)
-)
+    .catch((error) => console.log(error));
