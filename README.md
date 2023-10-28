@@ -6,7 +6,7 @@ Steps to run this project:
 2. Setup database settings inside `data-source.ts` file
 3. Run `npm start` command
 
-# FLow
+# FLow Auth User
 
 1. Install
 
