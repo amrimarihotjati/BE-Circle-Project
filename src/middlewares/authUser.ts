@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
-import * as dotenv from "dotenv";
-import { isTokenBlacklisted } from "../config/tokenManager";
-dotenv.config();
+import * as jwt from "jsonwebtoken";
 
 // export interface User extends Request {
 //   user: any;
@@ -19,31 +16,23 @@ declare global {
 
 const authUser = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { authorization } = req.headers;
-    let token: string;
+    const Authorization = req.headers.authorization
 
-    if (authorization && authorization.startsWith("Bearer")) {
-      token = authorization.split(" ")[1];
-      //   console.log(token);
-    } else {
-      token = req.headers["x-access-token"] || req.cookies["jwt"] || null;
-    }
-    if (!token) {
-      return res.status(403).send("unAuthorization");
+    if(!Authorization || !Authorization.startsWith("Bearer ")) {
+      return res.status(401).json({ Error: "Unauthorized" })
     }
 
-    if (isTokenBlacklisted(token)) {
-      return res.status(403).send("Invalid token");
+    const token = Authorization.split(" ")[1]
+
+    try {
+      const loginSession = jwt.verify(token, "pinjam_seratus")
+      res.locals.loginSession = loginSession
+      next()
+    } catch (err) {
+      return res.status(401).json({ Error: "Unauthorized" })
     }
-
-    const decoded = verify(token, process.env.JWT_TOKEN_KEY);
-    // console.log(decoded);
-
-    res.user = decoded;
-
-    next();
-  } catch (error) {
-    return res.status(500).json({ error });
+  } catch (err) {
+    return res.status(500).json({ Error: "Error while authenticating" })
   }
 };
 

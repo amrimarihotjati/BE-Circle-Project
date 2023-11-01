@@ -4,12 +4,14 @@ import authUser from "../middlewares/authUser";
 
 const router = Router();
 
-router.get("/users", UserController.find);
+router.get("/users",  UserController.find);
 router.patch("/user/:id", authUser, UserController.update);
 router.delete("/user/:id", authUser, UserController.delete);
 
 router.post("/logout", authUser, UserController.logout);
-router.post("/users", UserController.register);
-router.post("/login", UserController.login);
+
+router.post("/auth/users", UserController.register);
+router.post("/auth/login", UserController.login);
+router.get("/auth/check", authUser, UserController.checkLogin)
 
 export default router;

@@ -2,10 +2,13 @@ import { Repository } from "typeorm"
 import { User } from "../entities/User";
 import { AppDataSource } from "../data-source";
 import { Request, Response } from "express";
-import { UserSchemaValidate } from "../utils/UserSchemaValidate";
+import { UserSchemaValidate, UserSchemaUpdate, UserSchemaLogin } from "../utils/UserSchemaValidate";
 import { hashPassword } from "../utils/user_bcript";
 import { checkPassword } from "../utils/user_bcript";
 import TokenConfig from "../utils/auth";
+import * as bcrypt from "bcrypt";
+import * as jwt from "jsonwebtoken"
+
 
 type TypeUserRegister = {
     username: string;
@@ -52,11 +55,10 @@ export default new (class UserService {
             const data: TypeUserRegister = req.body;
             const { bio, email, full_name, password, username } = data;
             const { error } = UserSchemaValidate.validate({
-                full_name,
-                email,
-                password,
-                username,
-                bio,
+              full_name,
+              email,
+              password,
+              username,
             });
 
             if(error) return res.status(404).json({ Error: `${error}` });
@@ -99,42 +101,73 @@ export default new (class UserService {
     try {
       const body: TypeUserLogin = req.body;
 
-      const { error } = UserSchemaValidate.validate(body);
+      const { error } = UserSchemaLogin.validate(body);
       if (error) {
         return res.status(404).json({ status: 404, error });
       }
+      
 
-      const findUser = await this.UserRepository.findOne({
-        where: { email: body.email },
-      });
+      const isCheckUser = await this.UserRepository.findOne({
+        where: {
+          email: body.email
+        },
+        select: ['id', 'full_name', 'username', 'email', 'password']
+      })
 
-      if (!findUser)
-        return res
-          .status(404)
-          .json({ status: 404, message: "email not found" });
+      if(!isCheckUser) return res.status(404).json({ status: 404, message: "email not found" })
 
-      const chekValidasi = checkPassword(body.password, findUser.password);
+      const isCheckPassword = await bcrypt.compare(body.password, isCheckUser.password)
 
-      if (!chekValidasi) {
-        return res.status(404).json({ status: 404, message: "password wrong" });
-      }
-      const maxAge = 2 * 60 * 60;
-      const token = TokenConfig.getToken(body.email, maxAge);
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        maxAge: maxAge * 1000,
-      });
 
-      const user = {
-        username: findUser.username,
-        full_name: findUser.full_name,
-      };
+      if (!isCheckPassword) return res.status(400).json({ Error: "Incorrect password" })
 
-      return res.status(200).json({ status: 200, data: user, token });
+      const user = this.UserRepository.create({
+        id: isCheckUser.id,
+        full_name: isCheckUser.full_name,
+        email: isCheckUser.email,
+        username: isCheckUser.username,
+        photo_profile: isCheckUser.photo_profile
+      })
+
+      console.log(user)
+
+      const token = await jwt.sign({ user }, "pinjam_seratus", { expiresIn: "2h" })
+
+      return res.status(200).json({
+        user,
+        token
+      })
+
     } catch (error) {
       return res
         .status(500)
         .json({ status: 500, message: "something when wrong on login user" });
+    }
+  }
+
+  async checkLogin(req: Request, res: Response): Promise<Response> {
+    try {
+      const logginSession = res.locals.loginSession
+      
+      const user = await this.UserRepository.findOne({
+        where: {
+          id: logginSession.user.id
+        }
+      })
+
+      // console.log('login',user)
+
+      
+      return res.status(200).json({
+        user,
+        message: "You are logged in"
+      })
+
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "something when wrong on check login user",
+      })
     }
   }
 

@@ -5,7 +5,6 @@ export const UserSchemaValidate = Joi.object({
   full_name: Joi.string().min(5).required(),
   email: Joi.string().min(5).required(),
   password: Joi.string().min(5).required(),
-  bio: Joi.string(),
 });
 
 export const UserSchemaUpdate = Joi.object({

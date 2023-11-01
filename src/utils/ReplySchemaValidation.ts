@@ -1,9 +1,7 @@
 import * as Joi from "joi";
 
 export const ReplySchemaValidation = Joi.object({
-  user_id: Joi.number().required(),
-  thread_id: Joi.number().required(),
-  // image: Joi.string(),
+  image: Joi.string().allow(null, ""),
   content: Joi.string(),
 });
 
