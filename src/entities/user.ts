@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToMany, JoinTable } from "typeorm";
 import { Threads } from "./Thread";
 
 
@@ -39,4 +39,20 @@ export class User {
     @JoinColumn()
     threads: Threads[]
 
+    @ManyToMany(() => User, (user) => user.following)
+    @JoinTable({
+      name: "followers",
+      joinColumn: {
+        name: "follower_id",
+        referencedColumnName: "id",
+      },
+      inverseJoinColumn: {
+        name: "following_id",
+        referencedColumnName: "id",
+      },
+    })
+    followers: User[];
+  
+    @ManyToMany(() => User, (user) => user.followers)
+    following: User[];
 }

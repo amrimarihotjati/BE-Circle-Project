@@ -26,4 +26,9 @@ export default new (class UserController {
     checkLogin(req: Request, res: Response) {
       UserService.checkLogin(req, res);
     }
+
+    follow(req: Request, res: Response) {
+      UserService.follow(req, res);
+    }
+
   })();

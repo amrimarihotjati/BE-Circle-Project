@@ -30,7 +30,7 @@ export default new (class UserService {
     async find(req: Request, res: Response): Promise<Response> {
         try {
             const users = await this.UserRepository.find({
-
+                relations:["following", "followers"]
             }); 
 
             // console.log(findAll)
@@ -188,8 +188,7 @@ export default new (class UserService {
 
   async update(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
-      const idUser = parseInt(id, 10);
+      const idUser = res.locals.loginSession.user.id;
 
       const findOneUser = await this.UserRepository.findOneBy({ id: idUser });
       if (!findOneUser) {
@@ -197,7 +196,7 @@ export default new (class UserService {
       }
       const body: TypeUserRegister = req.body;
 
-      const { error } = UserSchemaValidate.validate(body);
+      const { error } = UserSchemaUpdate.validate(body);
       if (error) return res.status(404).json({ status: 404, error });
 
       if (body.full_name !== "") {
@@ -250,6 +249,44 @@ export default new (class UserService {
         message: "something when wrong on delete user",
         error,
       });
+    }
+  }
+
+  async follow(req: Request, res: Response): Promise<Response> {
+    try {
+      const logginSession = res.locals.loginSession
+      const followingId = Number(req.body.followingId);
+
+      const follower = await this.UserRepository.findOne({
+        where: { id: logginSession.user.id },
+        relations: ['following'],
+      });
+      const following = await this.UserRepository.findOne({
+        where: { id: followingId },
+      });
+
+      if (!follower || !following) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if the follower is already following the user
+      const isFollowing = follower.following.some((user) => user.id === following.id);
+
+      if (isFollowing) {
+        // If they are already following, unfollow
+        follower.following = follower.following.filter((user) => user.id !== following.id);
+      } else {
+        // If they are not following yet, follow
+        follower.following.push(following);
+      }
+
+      await this.UserRepository.save(follower);
+
+      return res.status(200).json(follower);
+    } catch (error) {
+      console.log(error);
+      
+      return res.status(500).json({ error: 'Error while following/unfollowing user' });
     }
   }
 })
