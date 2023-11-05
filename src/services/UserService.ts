@@ -30,7 +30,7 @@ export default new (class UserService {
     async find(req: Request, res: Response): Promise<Response> {
         try {
             const users = await this.UserRepository.find({
-                relations:["following", "followers"]
+                relations:["following", "followers", "like"]
             }); 
 
             // console.log(findAll)
@@ -150,6 +150,7 @@ export default new (class UserService {
       const logginSession = res.locals.loginSession
       
       const user = await this.UserRepository.findOne({
+        relations:["following", "followers", "like.user_id"],
         where: {
           id: logginSession.user.id
         }

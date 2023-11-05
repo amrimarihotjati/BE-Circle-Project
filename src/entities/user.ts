@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToMany, JoinTable } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToMany, JoinTable, Like } from "typeorm";
 import { Threads } from "./Thread";
+import { Likes } from "./Likes";
 
 
 
@@ -38,6 +39,9 @@ export class User {
     })
     @JoinColumn()
     threads: Threads[]
+
+    @OneToMany(() => Likes, (like) => like.user_id)
+    like: Likes[]
 
     @ManyToMany(() => User, (user) => user.following)
     @JoinTable({
