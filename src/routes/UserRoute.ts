@@ -14,6 +14,4 @@ router.post("/auth/users", UserController.register);
 router.post("/auth/login", UserController.login);
 router.get("/auth/check", authUser, UserController.checkLogin)
 
-router.post("/follow/", authUser, UserController.follow);
-
 export default router;

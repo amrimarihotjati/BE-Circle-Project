@@ -4,6 +4,7 @@ import  cors from "cors";
 import { ThreadRoute, UserRoute, ReplyRoute, LikeRoute } from "./routes";
 import { cloudinaryConfig } from "./config/cloudConfig";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 
 
 
@@ -11,9 +12,10 @@ import cookieParser from "cookie-parser";
 AppDataSource.initialize()
     .then(async () => {
         const app = express();
+        const port = process.env.PORT
         
         //Port
-        const PORT = 5000;
+        // const PORT = 5000;
         //Cors Option
         const API_URL = "http://localhost:5173/";
         // const option: cors.CorsOptions = {
@@ -37,8 +39,8 @@ AppDataSource.initialize()
 
 
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
+        app.listen(port, () => {
+            console.log(`Server is running on http://localhost:${port}`);
         })
 
     })
