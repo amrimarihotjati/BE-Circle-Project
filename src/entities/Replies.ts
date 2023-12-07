@@ -1,8 +1,7 @@
 import { Column, Entity } from "typeorm";
 import { PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import { User } from "./User";
-import { Threads } from "./Thread";
-
+import { User } from "./user";
+import { Threads } from "./thread";
 
 @Entity({name: "replies"})
 export class Replies {

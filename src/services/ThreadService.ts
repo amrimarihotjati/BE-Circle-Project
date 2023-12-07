@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Threads } from "../entities/Thread";
+import { Threads } from "../entities/thread";
 import {AppDataSource} from "../data-source";
 import { Response, Request, response } from "express";
 import { ThreadSchemaValidate, UpdateThreadValidate } from "../utils/ThreadSchemaValidation";

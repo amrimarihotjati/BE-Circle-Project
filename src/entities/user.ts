@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn } from "typeorm";
-import { Threads } from "./Thread";
+import { Threads } from "./thread";
 
 
 

@@ -1,15 +1,14 @@
 import { 
-    Entity, 
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    OneToMany
-
+  Entity, 
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany
 } from "typeorm";
-import { User } from "./User";
 import { Replies } from "./Replies";
 import { Likes } from "./Likes";
+import { User } from "./user";
 
 
 @Entity({name: "threads"})
