@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToMany, JoinTable, Like } from "typeorm";
+import { 
+  Column, 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  OneToMany, 
+  JoinColumn, 
+  ManyToMany, 
+  JoinTable
+} from "typeorm";
 import { Threads } from "./Thread";
 import { Likes } from "./Likes";
 
