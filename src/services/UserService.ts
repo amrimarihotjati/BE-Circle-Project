@@ -1,5 +1,5 @@
 import { Repository } from "typeorm"
-import { User } from "../entities/User";
+import { User } from "../entities/user";
 import { AppDataSource } from "../data-source";
 import { Request, Response } from "express";
 import { UserSchemaValidate, UserSchemaUpdate, UserSchemaLogin } from "../utils/UserSchemaValidate";
