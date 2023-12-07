@@ -20,7 +20,7 @@ export class Threads{
     @Column()
     content: string;
 
-    @Column()
+    @Column({nullable: true})
     image: string;
 
     @Column({type: "timestamp", default: () => "CURRENT_TIMESTAMP"})

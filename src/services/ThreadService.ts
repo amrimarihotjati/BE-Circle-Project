@@ -3,7 +3,8 @@ import { Threads } from "../entities/Thread";
 import {AppDataSource} from "../data-source";
 import { Response, Request, response } from "express";
 import { ThreadSchemaValidate, UpdateThreadValidate } from "../utils/ThreadSchemaValidation";
-
+import { dataUri } from "../middlewares/uploadFile";
+import { uploader } from "../config/cloudConfig";
 
 export default new (class ThreadService {
     private readonly ThreadRepository: Repository<Threads> = AppDataSource.getRepository(Threads);
@@ -11,7 +12,7 @@ export default new (class ThreadService {
     async find(req: Request, res: Response): Promise<Response> {
       try {
         const threads = await this.ThreadRepository.find({
-          relations: ["created_by", "number_of_replies"],
+          relations: ["created_by", "number_of_replies", "like.user_id"],
           select: {
             created_by: {
               full_name: true,
@@ -49,20 +50,62 @@ export default new (class ThreadService {
 
     async create(req: Request, res: Response): Promise<Response> {
       try {
-        const body = req.body;
+        const {content} = req.body;
+        const created_by = res.locals.loginSession.user.id;
+
+        console.log(created_by);
+
+        console.log(req.file);
+
+        //Image
+        let image = ""
+
+        if(req.file === undefined){
+          image = "";
+        }else{
+          const file = dataUri(req).content;
   
-        const { error } = ThreadSchemaValidate.validate(body);
+          console.log(file);
+    
+          const cloud = await uploader.upload(file, {
+            use_filename: true,
+            folder: "threads",
+          });
+  
+          if(!cloud || !cloud.secure_url){
+            return res.status(404).json({ status: 404, message: "image not found" });
+          }
+
+          image = cloud.secure_url
+        }
+  
+  
+        
+        const { error , value } = ThreadSchemaValidate.validate({ content, created_by });
         if (error) return res.status(404).json({ status: 404, error });
-  
-        const newThread = await this.ThreadRepository.save(body);
-  
-        return res.status(200).json({ status: 200, message: "success", data: newThread });
-      } catch (error) {
+
+        console.log(value);
+
+        const newThread = await this.ThreadRepository.save({
+          content,
+          created_by,
+          image,
+        });
+
+        console.log(newThread);
+        
         return res
-          .status(500)
-          .json({ mstatus: 500, message: `${error}` });
+        .status(200)
+        .json({ status: 200, message: "success", data: newThread });
+        
+      } catch (error) {
+        return res.status(500).json({
+          mstatus: 500,
+          message: "something when wrong on create thread",
+        });
       }
     }
+
     async delete(req: Request, res: Response): Promise<Response> {
       try {
         const id: number = parseInt(req.params.id, 10);

@@ -8,8 +8,12 @@ export const UserSchemaValidate = Joi.object({
 });
 
 export const UserSchemaUpdate = Joi.object({
-  username: Joi.string().min(5),
-  name: Joi.string().min(5),
+  username: Joi.string().allow(''),
+  full_name: Joi.string().allow(''),
+  email: Joi.string().allow(''),
+  password: Joi.string().allow(''),
+  bio: Joi.string().allow(''),
+  photo_profile: Joi.string().allow('')
 });
 
 export const UserSchemaLogin = Joi.object({
