@@ -2,8 +2,6 @@ import { Column, Entity, PrimaryGeneratedColumn, OneToMany, JoinColumn, ManyToMa
 import { Threads } from "./Thread";
 import { Likes } from "./Likes";
 
-
-
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
