@@ -1,7 +1,6 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Column, } from "typeorm";
-import { User } from "./user";
-import { Threads } from "./thread";
-
+import { User } from "./User";
+import { Threads } from "./Thread";
 
 @Entity()
 export class Likes {

@@ -1,7 +1,7 @@
 import { AppDataSource } from "../data-source";
 import { Request, Response } from "express";
 import { Replies } from "../entities/Replies";
-import { Threads } from "../entities/thread";
+import { Threads } from "../entities/Thread";
 import { Repository } from "typeorm";
 import { ReplySchemaValidation, ReplyUpdateValidation } from "../utils/ReplySchemaValidation";
 import { dataUri } from "../middlewares/uploadFile";
