@@ -1,10 +1,10 @@
 import { Repository } from "typeorm";
-import { Threads } from "../entities/Thread";
 import {AppDataSource} from "../data-source";
 import { Response, Request, response } from "express";
 import { ThreadSchemaValidate, UpdateThreadValidate } from "../utils/ThreadSchemaValidation";
 import { dataUri } from "../middlewares/uploadFile";
 import { uploader } from "../config/cloudConfig";
+import { Threads } from "../entities/Thread";
 
 export default new (class ThreadService {
     private readonly ThreadRepository: Repository<Threads> = AppDataSource.getRepository(Threads);
